@@ -19,7 +19,8 @@ client host port = withSocketsDo $ do
 msgSender :: Socket -> IO ()
 msgSender sock = do
   message <- B8.getLine
-  send sock message
+  send sock $ B8.concat [(B8.pack "GET /echo.php?message="), message, (B8.pack " HTTP/1.1\n\r\n")]
+  send sock "Host: localhost\n\r\n"
   send sock "\n\r\n"
   rMsg <- recv sock 1024
   B8.putStrLn rMsg

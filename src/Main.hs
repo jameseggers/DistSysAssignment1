@@ -13,5 +13,14 @@ client host port = withSocketsDo $ do
                 let serverAddr = head addrInfo
                 sock <- socket (addrFamily serverAddr) Stream defaultProtocol
                 connect sock (addrAddress serverAddr)
-                message <- getLine
+                msgSender sock
                 sClose sock
+
+msgSender :: Socket -> IO ()
+msgSender sock = do
+  message <- B8.getLine
+  send sock message
+  send sock "\n\r\n"
+  rMsg <- recv sock 1024
+  B8.putStrLn rMsg
+  msgSender sock
